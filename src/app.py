@@ -33,30 +33,26 @@ class HalloweenMannequinHead():
         logging.info('Loading ML models')
         self.daddy = Daddy()
 
-    def get_person_location_x_percentage(self, detection):
+    def get_person_location_percentage(self, detection):
         """Returns the person's horizontal location in the frame as a percentage"""
         frame_height, frame_width = detection.frame.shape[:2]
-        percentage = round(detection.x / float(frame_width), 2)
-        return percentage
-
-    def get_person_location_y_percentage(self, detection):
-        """Returns the person's vertical location in the frame as a percentage"""
-        frame_height, frame_width = detection.frame.shape[:2]
-        percentage = round(detection.x / float(frame_height), 2)
-        return percentage
+        percentage_x = round(detection.x / float(frame_width), 2)
+        percentage_y = round(detection.y / float(frame_height), 2)
+        coordinates = [percentage_x, percentage_y]
+        return coordinates
 
     def person_detected(self, detection):
         """Call back for a person being detected"""
-        x_percentage = self.get_person_location_x_percentage(detection)
-        y_percentage = self.get_person_location_y_percentage(detection)
-        print(f'x percentage {x_percentage}')
-        print(f'y percentage {y_percentage}')
+        percentages = self.get_person_location_percentage(detection)
+        print(f'x percentage {percentages[0]}')
+        print(f'y percentage {percentages[1]}')
         if self.server_mode:
             host = os.environ['RASPBERRY_PI_HOST']
-            url = f'http://{host}:8000/servo/?px={x_percentage}&py={y_percentage}'
+            url = f'http://{host}:8000/servo/?px={percentages[0]}&py={percentages[1]}'
             requests.get(url)
         else:
-            self.servo_controller.set_servo_percent(x_percentage)
+            self.servo_controller.set_servo_percent(percentages[0], 'x')
+            self.servo_controller.set_servo_percent(percentages[1], 'y')
 
     def process_frames_from_stream(self):
         """Processes the frames from the stream"""
