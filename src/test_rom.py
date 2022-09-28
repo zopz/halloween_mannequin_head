@@ -1,6 +1,7 @@
 import os
 import logging
 import time
+import requests
 from app import HalloweenMannequinHead as app
 
 class Test():
@@ -15,8 +16,13 @@ class Test():
         """Run the tests"""
         try:
             for deg in range(0, 100):
-                app.servo_controller.set_servo_percent(deg, 'x')
-                app.servo_controller.set_servo_percent(deg, 'y')
+                if self.server_mode:
+                    host = os.environ['RASPBERRY_PI_HOST']
+                    url = f'http://{host}:8000/servo/?px={deg}&py={deg}'
+                    requests.get(url)
+                else:
+                    app.servo_controller.set_servo_percent(deg, 'x')
+                    app.servo_controller.set_servo_percent(deg, 'y')
                 time.sleep(0.1)
         except KeyboardInterrupt:
             logging.info('Exiting application')

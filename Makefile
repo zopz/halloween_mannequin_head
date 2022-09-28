@@ -7,6 +7,11 @@ run:
 	@echo "Starting Script"
 	@. env/bin/activate && export STREAM_URI=$(STREAM_URI) && cd src && python app.py
 
+.PHONY: test
+run:
+	@echo "Starting Test"
+	@. env/bin/activate && export STREAM_URI=$(STREAM_URI) && cd src && python test_rom.py
+
 .PHONY: install
 install:
 	@cd scripts && bash install_pi.sh
