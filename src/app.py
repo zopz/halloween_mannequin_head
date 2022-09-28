@@ -39,13 +39,21 @@ class HalloweenMannequinHead():
         percentage = round(detection.x / float(frame_width), 2)
         return percentage
 
+    def get_person_location_y_percentage(self, detection):
+        """Returns the person's vertical location in the frame as a percentage"""
+        frame_height, frame_width = detection.frame.shape[:2]
+        percentage = round(detection.x / float(frame_height), 2)
+        return percentage
+
     def person_detected(self, detection):
         """Call back for a person being detected"""
         x_percentage = self.get_person_location_x_percentage(detection)
-        print('x percentage {}'.format(x_percentage))
+        y_percentage = self.get_person_location_y_percentage(detection)
+        print(f'x percentage {x_percentage}')
+        print(f'y percentage {y_percentage}')
         if self.server_mode:
             host = os.environ['RASPBERRY_PI_HOST']
-            url = 'http://{}:8000/servo/?p={}'.format(host, x_percentage)
+            url = f'http://{host}:8000/servo/?px={x_percentage}&py={y_percentage}'
             requests.get(url)
         else:
             self.servo_controller.set_servo_percent(x_percentage)

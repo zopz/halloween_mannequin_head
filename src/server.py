@@ -18,11 +18,15 @@ def index():
 @app.route('/servo/')
 def alarm():
     """Turn on the relay"""
-    percentage = request.args.get('p')
-    if not percentage:
-        return jsonify({'status': 'no p'})
-    sc.set_servo_percent(float(percentage))
-    return jsonify({'status': 'p={}'.format(percentage)})
+    percentage_x = request.args.get('px')
+    percentage_y = request.args.get('py')
+    if not percentage_x:
+        return jsonify({'status': 'no px'})
+    if not percentage_y:
+        return jsonify({'status': 'no py'})
+    sc.set_servo_percent(float(percentage_x), 'x')
+    sc.set_servo_percent(float(percentage_y), 'y')
+    return jsonify({'status': {f'px={percentage_x}', f'py={percentage_y}'}})
 
 
 if __name__ == '__main__':

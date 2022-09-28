@@ -8,7 +8,7 @@ class ServoController():
     def __init__(self):
         """Set up the servos"""
         logging.info('Setting up servo')
-        self.servo_pin = 3
+        self.channels = [11,12]
         self._setup_gpio()
         self._set_servo_range()
 
@@ -27,20 +27,24 @@ class ServoController():
     def _setup_gpio(self):
         """Set up the gpio"""
         gpio.setmode(gpio.BOARD)
-        gpio.setup(self.servo_pin, gpio.OUT)
-        self.pwm = gpio.PWM(self.servo_pin, 50)
+        gpio.setup(self.channels, gpio.OUT)
+        self.pwm = gpio.PWM(self.channels, 50)
         self.pwm.start(0)
 
-    def set_servo_angle(self, angle):
+    def set_servo_angle(self, angle, axis):
         """Set the angle of the servo"""
-        logging.info('Setting angle to {}'.format(angle))
-        gpio.output(self.servo_pin, True)
+        logging.info(f'Setting {axis} axis angle to {angle}')
+        if axis == 'x':
+            channel = self.channels[0]
+        else:
+            channel = self.channels[1]
+        gpio.output(channel, True)
         self.pwm.ChangeDutyCycle(angle / 18 + 2)
         time.sleep(1)
-        gpio.output(self.servo_pin, False)
+        gpio.output(channel, False)
         self.pwm.ChangeDutyCycle(0)
 
-    def set_servo_percent(self, percent):
+    def set_servo_percent(self, percent, axis):
         """Converts a decimal percentage into servo angle"""
         angle = int((1 - percent) * self.servo_range) + self.servo_min
-        self.set_servo_angle(angle)
+        self.set_servo_angle(angle, axis)
