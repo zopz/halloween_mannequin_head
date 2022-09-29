@@ -4,7 +4,7 @@ import threading
 import time
 import requests
 import subprocess
-from rtsparty import Stream
+from picamera2 import Picamera2, Preview
 from objectdaddy import Daddy
 
 
@@ -26,7 +26,12 @@ class HalloweenMannequinHead():
     def _setup_stream(self):
         """Set up the stream to the camera"""
         logging.info('Starting stream')
-        self.stream = Stream(os.environ.get('STREAM_URI', None))
+        picam2 = Picamera2()
+        camera_config = picam2.create_preview_configuration()
+        picam2.configure(camera_config)
+        picam2.start_preview(Preview.QTGL)
+        picam2.start()
+        self.stream = picam2
 
     def _setup_object_recognition(self):
         """Set up object recognition and load models"""

@@ -1,5 +1,6 @@
 objectdaddy==0.0.4
-rtsparty==0.0.1
+picamera2==0.3.3
+numpy==1.23.3
 RPi.GPIO==0.7.1
 flask
 requests
